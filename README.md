@@ -141,5 +141,5 @@ git commit -m "first commit"
 git remote add origin https://github.com/perk-sh/beginwithit.git
 git push -u origin master
 ````
-
+git config
 
