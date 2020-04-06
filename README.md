@@ -2,12 +2,12 @@
 
 
 
-# Lesson 1
+## Lesson 1
 
 Document everything, you are going to forget it.
 Thats why we are going to use this method to learn new things.
 
-## Overview
+### Overview
 
 - Windows WSL
 - Unix/Linux basic commands
@@ -30,12 +30,16 @@ The basic command to begin with are:
 - touch - creates a file
 - rm - remove
 - history - show history of commands
-- mkdir - creates/make directory
+- mkdir - creates/make directory - can add -p to create a path if one fir doesnt exist
 - mv - move source dest(can be used to rename dir/file)
 - vi or vim - opens a file in the vim editor
 - which - shows where a command is in the filesystem
 - pwd - shows the location of the current dir
 - man vi - manual for example vi(can be anything)
+- run or combine more commands at once with ``;`` or ``&&`` 
+- head outputs first few lines of a file with -n you can specify how much rows you want to see(default 10)
+- tail outputs the last few lines of a file, can also use -n
+- cat - concatenates files and sends them to the standard output stream
 
 ### VIM
 
@@ -60,11 +64,11 @@ and SSH
 
 
 
- # Lesson 2
+## Lesson 2
 
 In this Lesson we will learn something about SSH, how we connect to a server and how we add a new user to a server incl. his SSH key.
 
-## SSH - Secure Shell
+### SSH - Secure Shell
 
 Generating your own SSH key:
 
@@ -109,7 +113,7 @@ chown -R perk:perk ~/.ssh
 To connect via ssh use:
 
 ````
-ssh do1.deseop.net
+ssh example.net
 ````
 
 /etc/hosts - Local NS entries
@@ -122,11 +126,13 @@ hint - Linux Unix folder structure(cd /)
 
 top - task manager for linux
 
+htop - improved and interactive top
+
 ps auxww - check
 
 
 
-# Lesson 3
+## Lesson 3
 
 To install and setup check:
 
@@ -143,10 +149,12 @@ git push -u origin master
 ````
 
 Save git repo and global credentials
+
 ````
 git config credential.helper store
 git config --global credential.helper store
 ````
+
 Saves the credentials in ~/.git-credentials
 
 
@@ -162,7 +170,7 @@ sudo tail -f /var/log/*.log
 
 
 
-# Lesson 4
+## Lesson 4
 
 Additional tips & tricks we saw in this lesson:
 
@@ -380,7 +388,29 @@ We can see that when we access the whoami container with traefik we get the X-Fo
 
 
 
+`sudo cat /var/data/docker/traefik/acme/acme.json | **grep** main` same as `sudo **grep** "main" /var/data/docker/traefik/acme/acme.json`
+
+ctrl+x + ctrl +e
+
+VIM :s/whoami/ghost/g + ENTER
+
+df -h - check fs
+
+clear - clean terminal
+
+````
+tree -L 2 /home/bojan/backup-do1/var/data/docker/ 
+
+rsync -rtuv root**@do**1.deseop.net:/var/data/docker/ /home/bojan/backup-do1/var/data/docker/
+````
+
+`ssh -A` - bring ssh keys
+
+`ssh-add -l` - show your ssh keys
+
+
+
 **TO DO**
 
--[ ] create an universal git repo for servers to have a standard config which we can access fast.
-
+- [ ] create an universal git repo for servers to have a standard config which we can access fast.
+- [ ] create a site > gatsby or jekyll
