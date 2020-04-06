@@ -1,8 +1,12 @@
-# Beginwithit
+# Begin with it
 
+Begin with **i**nformation **t**echnology.
 
+This is for everybody who is starting with infomation technology - it doesn't matter if you coming from a Linux, Mac or Windows background.
 
-## Lesson 1
+We'll start with a common foundation - linux - and go further to deploying an application on Kubernetes.
+
+## Lesson 1: Linux basics
 
 Document everything, you are going to forget it.
 Thats why we are going to use this method to learn new things.
@@ -11,8 +15,8 @@ Thats why we are going to use this method to learn new things.
 
 - Windows WSL
 - Unix/Linux basic commands
-- VIM
-- Markdown - MD
+- Vim
+- Markdown (md)
 - Todo
 
 ### Windows WSL
@@ -25,7 +29,7 @@ To start WSL go to Start > Ubuntu and the Terminal will open.
 
 The basic command to begin with are:
 
-- ls - lists all the files in the current directory
+- `ls` - lists all the files in the current directory
 - cd - change directory - cd ..
 - touch - creates a file
 - rm - remove
@@ -41,14 +45,14 @@ The basic command to begin with are:
 - tail outputs the last few lines of a file, can also use -n
 - cat - concatenates files and sends them to the standard output stream
 
-### VIM
+### Vim
 
 press `I` to enter INSERT MODE to edit the text
-press ESC to exit the INSERT MODE
-:wq - save and exit
-:q - exit
+press `ESC` to exit the INSERT MODE
+`:wq` - save and exit
+`:q` - exit
 
-### Markdown - MD
+### Markdown (md)
 
 ````
 # h1
@@ -58,15 +62,13 @@ press ESC to exit the INSERT MODE
 
 ### Todo
 
-Look up some basic commands in Linux, VIM, MD...
-
-and SSH
+Look up some basic commands in Linux, vim, Markdown, SSH etc.
 
 
 
-## Lesson 2
+## Lesson 2: Secure Shell and linux advance
 
-In this Lesson we will learn something about SSH, how we connect to a server and how we add a new user to a server incl. his SSH key.
+In this Lesson we will learn something about SSH (Secure Shell), how we connect to a server and how we add a new user to a server incl. his SSH key.
 
 ### SSH - Secure Shell
 
@@ -84,7 +86,7 @@ You can show the content of the SSH .pub key with:
 
 ``cat ./ssh/xxxx.pub``
 
-cat means concatenate and we will use it to read data from files in Linux. This command can also show the content of multiple files at once if you add them as additional parameters.
+`cat` means concatenate and we will use it to read data from files in Linux. This command can also show the content of multiple files at once if you add them as additional parameters.
 
 To create a new user on a server we can use:
 
@@ -103,7 +105,7 @@ mkdir ~/.ssh/
 
 vi ~/.ssh/authorized_keys
 
-PASTE THE XXX.pub KEY IN VIM AND :wq
+# Paste the XXX.pub key in vim and save&close (:wq)
 
 chmod 400 ~/.ssh/authorized_keys
 
@@ -116,7 +118,9 @@ To connect via ssh use:
 ssh example.net
 ````
 
-/etc/hosts - Local NS entries
+### Linux advance
+
+`/etc/hosts` - Local NS entries
 
 /etc/resolv.conf - DNS Configuration - points where to check for DNS servers
 
@@ -132,7 +136,7 @@ ps auxww - check
 
 
 
-## Lesson 3
+## Lesson 3: Git and GitHub
 
 To install and setup check:
 
@@ -162,7 +166,7 @@ Always check ``git status`` if the change is not staged for commit, you need to 
 
 More about gibthub @ https://guides.github.com/activities/hello-world/
 
-Additional Infos:
+### Linux advance
 
 sudo tail -f /var/log/
 
@@ -170,7 +174,7 @@ sudo tail -f /var/log/*.log
 
 
 
-## Lesson 4
+## Lesson 4: Docker
 
 Additional tips & tricks we saw in this lesson:
 
@@ -254,7 +258,9 @@ docker run -d --name ghost -e url=http://example.net -p 80:2368 ghost
 
 In this case the `80:2368` means that it will use the hosts port 80 but in the container it will be 2368.
 
-## Lesson 5
+## Lesson 5: Docker behind Traefik 
+
+Traefik (Loadbalancer/Reverse proxy)
 
 Additional tips & tricks we saw in this lesson:
 
@@ -390,7 +396,7 @@ We can see that when we access the whoami container with traefik we get the X-Fo
 
 `sudo cat /var/data/docker/traefik/acme/acme.json | **grep** main` same as `sudo **grep** "main" /var/data/docker/traefik/acme/acme.json`
 
-`ctrl+x + ctrl +e` - edit the current command in vi
+`CTRL + X` + `CTRL + E` - edit the current command in vi
 
 VIM :s/whoami/ghost/g + ENTER - replace whoami in the whole vim file with ghost
 
@@ -406,7 +412,12 @@ clear - clean terminal
 
 
 
-**TO DO**
+## Resources
+
+
+
+## Todo
 
 - [ ] create an universal git repo for servers to have a standard config which we can access fast.
+  `/etc/update-mot.d/`
 - [ ] create a site > gatsby or jekyll
