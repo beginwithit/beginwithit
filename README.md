@@ -390,19 +390,15 @@ We can see that when we access the whoami container with traefik we get the X-Fo
 
 `sudo cat /var/data/docker/traefik/acme/acme.json | **grep** main` same as `sudo **grep** "main" /var/data/docker/traefik/acme/acme.json`
 
-ctrl+x + ctrl +e
+`ctrl+x + ctrl +e` - edit the current command in vi
 
-VIM :s/whoami/ghost/g + ENTER
+VIM :s/whoami/ghost/g + ENTER - replace whoami in the whole vim file with ghost
 
 df -h - check fs
 
 clear - clean terminal
 
-````
-tree -L 2 /home/bojan/backup-do1/var/data/docker/ 
 
-rsync -rtuv root**@do**1.deseop.net:/var/data/docker/ /home/bojan/backup-do1/var/data/docker/
-````
 
 `ssh -A` - bring ssh keys
 
