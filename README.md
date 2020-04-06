@@ -2,7 +2,7 @@
 
 Begin with **i**nformation **t**echnology.
 
-This is for everybody who is starting with infomation technology - it doesn't matter if you coming from a Linux, Mac or Windows background.
+This is for everybody who is starting with infomation technology - it doesn't matter if you are coming from a Linux, Mac or Windows background.
 
 We'll start with a common foundation - linux - and go further to deploying an application on Kubernetes.
 
@@ -30,20 +30,20 @@ To start WSL go to Start > Ubuntu and the Terminal will open.
 The basic command to begin with are:
 
 - `ls` - lists all the files in the current directory
-- cd - change directory - cd ..
-- touch - creates a file
-- rm - remove
-- history - show history of commands
-- mkdir - creates/make directory - can add -p to create a path if one fir doesnt exist
-- mv - move source dest(can be used to rename dir/file)
-- vi or vim - opens a file in the vim editor
-- which - shows where a command is in the filesystem
-- pwd - shows the location of the current dir
-- man vi - manual for example vi(can be anything)
+- `cd` - change directory - cd ..
+- `touch` - creates a file
+- `rm` - remove
+- `history` - show history of commands
+- `mkdir` - creates/make directory - can add -p to create a path if one fir doesnt exist
+- `mv` - move source dest(can be used to rename dir/file)
+- `vi` or `vim` - opens a file in the vim editor
+- `which` - shows where a command is in the filesystem
+- `pwd` - shows the location of the current dir
+- `man vi` - manual for example vi(can be anything)
 - run or combine more commands at once with ``;`` or ``&&`` 
-- head outputs first few lines of a file with -n you can specify how much rows you want to see(default 10)
-- tail outputs the last few lines of a file, can also use -n
-- cat - concatenates files and sends them to the standard output stream
+- `head` outputs first few lines of a file with -n you can specify how much rows you want to see(default 10)
+- `tail` outputs the last few lines of a file, can also use -n
+- `cat` - concatenates files and sends them to the standard output stream
 
 ### Vim
 
@@ -122,17 +122,17 @@ ssh example.net
 
 `/etc/hosts` - Local NS entries
 
-/etc/resolv.conf - DNS Configuration - points where to check for DNS servers
+`/etc/resolv.conf` - DNS Configuration - points where to check for DNS servers
 
-nslookup - first checks hosts then resolv.conf(?!)
+`nslookup` - first checks hosts then resolv.conf(?!)
 
-hint - Linux Unix folder structure(cd /)
+Look up Linux Unix folder structure (cd /)
 
-top - task manager for linux
+`top` - task manager for linux
 
-htop - improved and interactive top
+`htop` - improved and interactive top
 
-ps auxww - check
+`ps auxww` - check
 
 
 
@@ -142,7 +142,7 @@ To install and setup check:
 
 https://help.ubuntu.com/lts/serverguide/git.html
 
-Today we will create our first rep "[beginwithit](https://github.com/perk-sh/beginwithit)" and we will push our local work to repo.
+Today we will create our first repository "[beginwithit](https://github.com/fperk/beginwithit)" and we will push our local work to repo.
 
 ````
 git init
@@ -164,39 +164,17 @@ Saves the credentials in ~/.git-credentials
 
 Always check ``git status`` if the change is not staged for commit, you need to run ``git add filename.xx`` and after that you can commit and push the file to the repository.
 
-More about gibthub @ https://guides.github.com/activities/hello-world/
+More about GitHub @ https://guides.github.com/activities/hello-world/
 
 ### Linux advance
 
-sudo tail -f /var/log/
+`sudo tail -f /var/log/`
 
-sudo tail -f /var/log/*.log
+`sudo tail -f /var/log/*.log`
 
 
 
 ## Lesson 4: Docker
-
-Additional tips & tricks we saw in this lesson:
-
-````
-vim - shift g - last line
-
-      shift a - last char in the line
-
-cat /etc/group - show all groups
-
-sudo usermod -aG docker perk - adds user perk to docker group
-
-last - check login records
-
-"/" - search inside man or vi - n - for next
-
-users - check which users are logged in
-
-tr - translate - replaces xxx with xxx in a file
-
-grep - search for "something" in file - ie history | grep docker
-````
 
 In this Lesson we installed Docker and ran a couple of containers.
 
@@ -250,7 +228,7 @@ After that we ran the Ghost CMS to test that out before out next test.
 docker run -d --name some-ghost -e url=http://localhost:3001 -p 3001:2368 ghost
 ````
 
-in our case:
+In our case:
 
 ````
 docker run -d --name ghost -e url=http://example.net -p 80:2368 ghost
@@ -258,15 +236,31 @@ docker run -d --name ghost -e url=http://example.net -p 80:2368 ghost
 
 In this case the `80:2368` means that it will use the hosts port 80 but in the container it will be 2368.
 
+### Linux advance
+
+`vim` - `SHIFT + G` - goes to last line
+
+        `SHIFT + A` - goes last character in the line and enters `INSERT MODE`
+
+`cat /etc/group` - show all groups
+
+`sudo usermod -aG docker perk` - adds user perk to docker group
+
+`last` - check login records
+
+`/` - search inside `man` or `vi` - n - for next result
+
+`users` - check which users are logged in
+
+`tr` - translate - replaces xxx with xxx in a file
+
+`grep` - search for "something" in a file - ie `history | grep docker`
+
+
 ## Lesson 5: Docker behind Traefik 
 
 Traefik (Loadbalancer/Reverse proxy)
 
-Additional tips & tricks we saw in this lesson:
-
-````
-netstat -tulpn - check which ports are used/listened to
-````
 
 In this lesson we will setup Traefik which is a loadbalancer/reverse proxy, you can find more on:
 
@@ -393,20 +387,21 @@ Accept: */*
 We can see that when we access the whoami container with traefik we get the X-Forwarded For header which is a standard header for identifying the IP address of a client connecting to a web server through an proxy or load balancer.
 
 
+### Linux advance
+
+`netstat -tulpn` - check which ports are used/listened to
 
 `sudo cat /var/data/docker/traefik/acme/acme.json | **grep** main` same as `sudo **grep** "main" /var/data/docker/traefik/acme/acme.json`
 
 `CTRL + X` + `CTRL + E` - edit the current command in vi
 
-VIM :s/whoami/ghost/g + ENTER - replace whoami in the whole vim file with ghost
+In VIM `:s/whoami/ghost/g` + `ENTER` - replace whoami in the whole vim file with ghost
 
-df -h - check fs
+`df -h` - check Filesystem
 
-clear - clean terminal
+`clear` - clean terminal
 
-
-
-`ssh -A` - bring ssh keys
+`ssh -A` - bring ssh keys to another session
 
 `ssh-add -l` - show your ssh keys
 
@@ -421,3 +416,5 @@ clear - clean terminal
 - [ ] create an universal git repo for servers to have a standard config which we can access fast.
   `/etc/update-mot.d/`
 - [ ] create a site > gatsby or jekyll
+- [ ] update motd
+- [ ]  
