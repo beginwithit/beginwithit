@@ -8,7 +8,7 @@ It starts with an common foundation - **Linux**. And goes up to managing your ow
 
 This is for everybody who wants to (re-)start with infomation technology - it doesn't matter if you are coming from a Linux, Mac or Windows background.
 
-The complete program is completely open source (as the technology used) and free as a beer.
+The complete program is completely open source (as the technologies used) and free as a beer.
 
 ## Contents 
 
