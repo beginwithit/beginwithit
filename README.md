@@ -2,9 +2,32 @@
 
 Begin with **i**nformation **t**echnology.
 
-This is for everybody who is starting with infomation technology - it doesn't matter if you are coming from a Linux, Mac or Windows background.
+**Begin with it** initiated as a mentoring session between a senior IT allrounder and an IT enthusiast.
 
-We'll start with a common foundation - linux - and go further to deploying an application on Kubernetes.
+It starts with an common foundation - **Linux**. And goes up to managing your own cloud server with **Docker** and Traefik as Loadbalancer. With an outlook to **Terraform**.
+
+This is for everybody who wants to (re-)start with infomation technology - it doesn't matter if you are coming from a Linux, Mac or Windows background.
+
+The complete program is completely open source (as the technology used) and free as a beer.
+
+## Contents 
+
+### Linux
+
+Lesson X-X
+
+Visual Enhancement
+
+* starship
+
+### Docker
+
+Lesson X-X
+
+### Terraform
+
+Lesson X-X
+
 
 ## Lesson 1: Linux basics
 
