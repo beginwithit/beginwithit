@@ -4,9 +4,9 @@ Begin with **i**nformation **t**echnology.
 
 **Begin with it** initiated as a mentoring session between a senior IT allrounder and an IT enthusiast.
 
-It starts with an common foundation - **Linux**. And goes up to managing your own cloud server with **Docker** and Traefik as Loadbalancer. With an outlook to **Terraform**.
-
 This is for everybody who wants to (re-)start with infomation technology - it doesn't matter if you are coming from a Linux, Mac or Windows background.
+
+It starts with a common foundation - **Linux**. And goes up to managing your own cloud server with **Docker** and Traefik as Loadbalancer. With an outlook to **Terraform**.
 
 The complete program is completely open source (as the technologies used) and free as a beer.
 
@@ -14,7 +14,7 @@ The complete program is completely open source (as the technologies used) and fr
 
 ### Linux
 
-Lesson X-X
+Lesson X-X (tbd)
 
 Visual Enhancement
 
@@ -22,11 +22,11 @@ Visual Enhancement
 
 ### Docker
 
-Lesson X-X
+Lesson X-X (tbd)
 
 ### Terraform
 
-Lesson X-X
+Lesson X-X (tbd)
 
 
 ## Lesson 1: Linux basics
@@ -418,7 +418,7 @@ We can see that when we access the whoami container with traefik we get the X-Fo
 
 `CTRL + X` + `CTRL + E` - edit the current command in vi
 
-In VIM `:s/whoami/ghost/g` + `ENTER` - replace whoami in the whole vim file with ghost
+In vi standard mode: `:s/whoami/ghost/g` + `ENTER` - replace `whoami` in the whole (`g`) vim file with `ghost`
 
 `df -h` - check Filesystem
 
@@ -436,8 +436,6 @@ In VIM `:s/whoami/ghost/g` + `ENTER` - replace whoami in the whole vim file with
 
 ## Todo
 
-- [ ] create an universal git repo for servers to have a standard config which we can access fast.
-  `/etc/update-mot.d/`
-- [ ] create a site > gatsby or jekyll
-- [ ] update motd
-- [ ]  
+- [ ] create an universal git repo for server standard config which we can access fast
+    - `/etc/update-mot.d/`
+- [ ] create a blog/site in wordpress, ghost, jekyll, gatsby
