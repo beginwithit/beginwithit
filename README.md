@@ -428,7 +428,56 @@ In vi standard mode: `:s/whoami/ghost/g` + `ENTER` - replace `whoami` in the who
 
 `ssh-add -l` - show your ssh keys
 
+## Lesson 6 - Ruby & Jekyll
 
+In this lesson we will install Ruby and Jekyll and create a simple blog
+
+To install Ruby you can check ``https://www.ruby-lang.org/en/documentation/installation/``
+
+But we are going another way, we will install Ruby Envirovment (``rbenv``) so we can have multiple Ruby versions installed and we can easily switch between them.
+
+To do so we followed the instructions from ``https://github.com/rbenv/rbenv``
+and we executed the commands in this order:
+````
+$ git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+$ cd ~/.rbenv && src/configure && make -C src
+$ echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+$ ~/.rbenv/bin/rbenv init
+$ echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+````
+To rewind what we did there, we cloned the rbenv GIT Repo to ``~/.rbenv``, we compiled a dynamic bash extension to speed up rbenv(step 2 isnt necessary), we added the ``rbenv $PATH`` to our ``.bashrc`` and we setup rbenv in out shell by adding the last command.
+
+Now when you type ``rbenv`` into your shell you should get all the commands you can use with rbenv.
+First we will install a Ruby version, we will do that with ``rbenv install 2.6.5``. We chose version 2.6.5 but you can install any version you need and switch between them after.
+
+With the command ``ruby -v`` you can check which version you use and after you downloaded a new version with rbenv you can change the version for the whole system with ``rbenv global 2.6.5`` or just for the application with ``rbenv local``.
+
+For now we wont do much with Ruby, because we will just use it to install Jekyll to create a static website. 
+But if you want to check it out, here is a quick tutorial ``https://www.ruby-lang.org/en/documentation/quickstart/``
+
+Before we proceed to install Jekyll, i would suggest to configure the Gem installation directory for your user. In short, RubyGems is a package manager for the Ruby Language.
+To configure the directory we need to run:
+````
+echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc
+echo 'export GEM_HOME="$HOME/gems"' >> ~/.bashrc
+echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+````
+and last but not least you need to install GCC and Make, which you can do with the following command: ``sudo apt-get install build-essential``
+
+After that we are ready to install Jekyll with:
+``gem install jekyll bundler``
+
+When the installation is done, we can create our first blog:
+``jekyll new myblog``
+
+Depending in which directory you are(remember you can always check where you are with ``pwd``), a new subdirectory named "newblog" will be created and the blog files too.
+
+Go into the directory and run ``jekyll serve`` and _voila_, our first blog is up and running(locally).
+
+From here you can edit the markdown files and add new content to your new blog.
+
+For a more in depth Jekyll guide you can visit the [Jekyll website](https://jekyllrb.com/)
 
 ## Resources
 
