@@ -428,7 +428,7 @@ In vi standard mode: `:s/whoami/ghost/g` + `ENTER` - replace `whoami` in the who
 
 `ssh-add -l` - show your ssh keys
 
-## Lesson 6 - Ruby & Jekyll
+## Lesson 6: Ruby & Jekyll
 
 In this lesson we will install Ruby and Jekyll and create a simple blog
 
@@ -478,6 +478,332 @@ Go into the directory and run ``jekyll serve`` and _voila_, our first blog is up
 From here you can edit the markdown files and add new content to your new blog.
 
 For a more in depth Jekyll guide you can visit the [Jekyll website](https://jekyllrb.com/)
+
+## Lesson 7: Docker-compose
+
+Installing compose: https://docs.docker.com/compose/install/
+
+We will use docker-compose because it will be easier to manage docker containers, networks etc.
+
+First we will recreate the containers which we did with Docker Engine. We decided to create a docker-compose.yml file for each application separately.
+
+Example for Traefik:
+
+````
+# Traefik incl. labels for exposing the API/dashboard
+# docker-compose.yml
+
+version: "3.7"
+
+services:
+
+  traefik:
+    image: "traefik:v2.2"
+    container_name: "traefik"
+    environment:
+      - "TRAEFIK_ACCESSLOG=true"
+      - "TRAEFIK_PROVIDERS_DOCKER=true"
+      - "TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT=false"
+      - "TRAEFIK_API_DASHBOARD=true"
+      - "TRAEFIK_ENTRYPOINTS_WEB_ADDRESS=:80"
+      - "TRAEFIK_ENTRYPOINTS_WEBSECURE_ADDRESS=:443"
+      - "TRAEFIK_ENTRYPOINTS_WEB_HTTP_REDIRECTIONS_ENTRYPOINT_TO=websecure"
+      - "TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_EMAIL=email@email.com"
+      - "TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE_ENTRYPOINT=web"
+      - "TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_STORAGE=/acme/acme.json"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`traefik.example.net`)"
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.routers.api.tls=true"
+      - "traefik.http.routers.api.tls.certresolver=le"
+      - "traefik.http.routers.api.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=username:password"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/path/on/our/server:/acme/"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - web
+
+networks:
+  web:
+````
+
+Note: When entering the hashed password add another $ sign for every $ for the password to work.
+
+And we added the label ``"traefik.enable=true"`` so that we need to specify if another app we install wants to use traefik.
+
+Example for whoami:
+
+````
+# whoami incl. Traefik labels
+# docker-compose.yml
+
+version: "3.7"
+
+services:
+
+  whoami:
+    image: "containous/whoami"
+    container_name: "whoami"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.example.net`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+      - "traefik.http.routers.whoami.tls=true"
+      - "traefik.http.routers.whoami.tls.certresolver=le"
+    networks:
+      - traefik_web
+
+networks:
+  traefik_web:
+    external: true
+````
+
+Note: because we created separate ``.yml`` files we added the ``networks``, so the apps can communicate with each other. If we didnt do thet they would be separated in their own networks.
+
+After that we created two new compose files to test if everything would work with traefik.
+
+Example for [Rocketchat](https://github.com/RocketChat/Rocket.Chat):
+
+````
+version: '3.7'
+
+services:
+  rocketchat:
+    image: rocketchat/rocket.chat:3.0.7
+    command: >
+      bash -c
+        "for i in `seq 1 30`; do
+          node main.js &&
+          s=$$? && break || s=$$?;
+          echo \"Tried $$i times. Waiting 5 secs...\";
+          sleep 5;
+        done; (exit $$s)"
+    restart: unless-stopped
+    volumes:
+      - /path/on/our/server:/app/uploads
+    environment:
+      - PORT=3000
+      - ROOT_URL=https://chat.example.net
+      - MONGO_URL=mongodb://mongo:27017/rocketchat
+      - MONGO_OPLOG_URL=mongodb://mongo:27017/local
+      - MAIL_URL=smtp://smtp.email
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rocketchat.rule=Host(`chat.example.net`)"
+      - "traefik.docker.network=traefik_web"
+      - "traefik.http.routers.rocketchat.tls=true"
+      - "traefik.http.routers.rocketchat.tls.certresolver=le"
+    networks:
+      - traefik_web
+      - internal
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:4.0
+    restart: unless-stopped
+    volumes:
+     - /path/on/our/server:/data/db
+     #- ./data/dump:/dump
+    command: mongod --smallfiles --oplogSize 128 --replSet rs0 --storageEngine=mmapv1
+    labels:
+      - "traefik.enable=false"
+    networks:
+      - internal
+
+  # this container's job is just run the command to initialize the replica set.
+  # it will run the command and remove himself (it will not stay running)
+  mongo-init-replica:
+    image: mongo:4.0
+    command: >
+      bash -c
+        "for i in `seq 1 30`; do
+          mongo mongo/rocketchat --eval \"
+            rs.initiate({
+              _id: 'rs0',
+              members: [ { _id: 0, host: 'localhost:27017' } ]})\" &&
+          s=$$? && break || s=$$?;
+          echo \"Tried $$i times. Waiting 5 secs...\";
+          sleep 5;
+        done; (exit $$s)"
+    networks:
+      - internal
+    depends_on:
+      - mongo
+
+# Network traefik_web is where traefik resides
+# needs to be set in labels ("traefik.docker.network=web")
+networks:
+  traefik_web:
+    external: true
+  internal:
+
+````
+
+In this compose file we needed to run a MongoDB beside Rocketchat because it is a dependency of rocketchat, also we dont want to expose DB, just Rocketchat. Thats why we added another rocketchat_internal network to the DB and rocketchat, but Rocketchat will also use the treafik_web network so it communicate with traefik.
+
+We also found out that if one app has more networks and you have traefik as a reverse proxy, you will need to specify the label ``"traefik.docker.network=web"`` so traefik knows which network to use, because when we didnt do that the app sporadically switched to the other (rocketchat_internal) network and stopped working.
+
+We found that out by using ``docker logs traefik`` and we saw that rocketchat tried to communicate via two IPs with traefik, then we checked with ``docker inspect rocketchat`` which are the two IPs Rocketchat used and we saw when Rocketchat used his internal network the app didnt work.
+
+With that label this issue shouldnt appear.
+
+We also setup a compose file for Wordpress and a SQL Database:
+
+````
+version: '3.7'
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - "/var/data/docker/wordpress/mysql:/var/lib/mysql"
+    restart: always
+    environment:
+      - "MYSQL_ROOT_PASSWORD=somewordpress"
+      - "MYSQL_DATABASE=wordpress"
+      - "MYSQL_USER=wordpress"
+      - "MYSQL_PASSWORD=wordpress"
+    networks:
+      - wordpress_internal
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:latest
+    restart: always
+    environment:
+      - "WORDPRESS_DB_HOST=db:3306"
+      - "WORDPRESS_DB_USER=wordpress"
+      - "WORDPRESS_DB_PASSWORD=wordpress"
+      - "WORDPRESS_DB_NAME=wordpress"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress.rule=Host(`wordpress.example.net`)"
+      - "traefik.http.routers.wordpress.tls=true"
+      - "traefik.http.routers.wordpress.tls.certresolver=le"
+      - "traefik.docker.network=traefik_web"
+    networks:
+      - traefik_web
+      - wordpress_internal
+
+networks:
+  traefik_web:
+    external: true
+  wordpress_internal:
+
+````
+
+This we did just for an exercise, because we dont plan to use it but we just wanted to test it out. As we are already here we did a little detour and we wanted to see how to enter a sql database.
+
+First we need to connect to the SQL container: ``docker exec -it <sql container> bash``
+
+Then we can login to the DB and take a look at the data:
+
+````
+# login to db
+mysql -u username -p 
+# when in db enter
+show tables from <database>;
+select * from <database>.<table>;
+````
+
+Because we did this as a test we moved this application to an archive.
+
+We also setup [Keycloak](https://github.com/keycloak/keycloak) like this.
+
+Example for Keycloak:
+
+````
+version: "3.7"
+
+services:
+  postgres:
+    image: postgres
+    volumes:
+      - /path/on/our/server:/var/lib/postgresql/data
+    environment:
+      - "POSTGRES_DB=keycloak"
+      - "POSTGRES_USER=keycloak"
+      - "POSTGRES_PASSWORD=password"
+    networks:
+      - internal
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      - "DB_VENDOR=POSTGRES"
+      - "DB_ADDR=postgres"
+      - "DB_DATABASE=keycloak"
+      - "DB_USER=keycloak"
+      - "DB_SCHEMA=public"
+      - "DB_PASSWORD=password"
+      - "KEYCLOAK_USER=username"
+      - "KEYCLOAK_PASSWORD=password"
+      - "PROXY_ADDRESS_FORWARDING=true"
+    depends_on:
+      - postgres
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keycloak.rule=Host(`keycloak.example.net`)"
+      - "traefik.http.routers.keycloak.tls=true"
+      - "traefik.http.routers.keycloak.tls.certresolver=le"
+      - "traefik.docker.network=traefik_web"
+    networks:
+      - internal
+      - traefik_web
+
+networks:
+  internal:
+  traefik_web:
+    external: true
+````
+
+Now our folder composition looks like this:
+
+````
+❯ tree
+.
+├── archive
+│   └── wordpress
+│       └── docker-compose.yml
+└── current
+    ├── all_up.sh
+    ├── ghost
+    │   └── docker-compose.yml
+    ├── keycloak
+    │   └── docker-compose.yml
+    ├── rocketchat
+    │   └── docker-compose.yml
+    ├── traefik
+    │   └── docker-compose.yml
+    └── whoami
+        └── docker-compose.yml
+
+````
+
+We made it like this so we can choose which app will be deployed or we can deployed them all at once with `all_up.sh`, thats why wordpress is in the `archive`.
+
+`all_up.sh`
+
+````
+#!/usr/bin/env bash
+
+for d in /var/data/deseop/current/*/ ; do (cd "$d" && docker-compose up -d); done
+
+````
+### Linux advance
+
+Troubleshooting docker:
+
+`docker inspect <container_name> | grep -5 labels` - to search for the word "labels"and 5 rows above and below the word
+`docker logs <container_name>` - to check logs
+`docker network ls` - lists all docker networks
+
+
 
 ## Resources
 
