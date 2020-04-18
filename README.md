@@ -1,8 +1,6 @@
 # Begin with it
 
-Begin with **i**nformation **t**echnology.
-
-**Begin with it** initiated as a mentoring session between a senior IT allrounder and an IT enthusiast.
+**Begin with information technology** initiated as a mentoring session between a senior IT allrounder and an IT enthusiast.
 
 This is for everybody who wants to (re-)start with infomation technology - it doesn't matter if you are coming from a Linux, Mac or Windows background.
 
@@ -12,22 +10,24 @@ The complete program is completely open source (as the technologies used) and fr
 
 ## Contents 
 
-### Linux
+### Linux & Git (Lesson 1-3)
 
-Lesson X-X (tbd)
+* Lesson 1: Linux basics
+* Lesson 2: Secure Shell and Linux advance
+* Lesson 3: Git and GitHub
+* Bonus: Visual Enhancement (starship)
 
-Visual Enhancement
+### Docker & Docker-compose (Lesson 4-7)
 
-* starship
-
-### Docker
-
-Lesson X-X (tbd)
+* Lesson 4: Docker
+* Lesson 5: Docker behind Traefik
+* Lesson 6: Ruby & Jekyll
+* Lesson 7: (tbd)
 
 ### Terraform
 
-Lesson X-X (tbd)
-
+* Lesson 8: Terraform
+* Lesson 9: Terraform Modules
 
 ## Lesson 1: Linux basics
 
@@ -89,7 +89,7 @@ Look up some basic commands in Linux, vim, Markdown, SSH etc.
 
 
 
-## Lesson 2: Secure Shell and linux advance
+## Lesson 2: Secure Shell and Linux advance
 
 In this Lesson we will learn something about SSH (Secure Shell), how we connect to a server and how we add a new user to a server incl. his SSH key.
 
