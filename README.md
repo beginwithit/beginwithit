@@ -22,7 +22,7 @@ The complete program is completely open source (as the technologies used) and fr
 * Lesson 4: Docker
 * Lesson 5: Docker behind Traefik
 * Lesson 6: Ruby & Jekyll
-* Lesson 7: (tbd)
+* Lesson 7: Docker-compose
 
 ### Terraform
 
@@ -803,7 +803,9 @@ Troubleshooting docker:
 `docker logs <container_name>` - to check logs
 `docker network ls` - lists all docker networks
 
+## Lesson 8: Terraform
 
+## Lesson 9: Terraform Modules
 
 ## Resources
 
