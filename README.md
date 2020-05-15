@@ -22,7 +22,7 @@ The complete program is completely open source (as the technologies used) and fr
 * Lesson 4: Docker
 * Lesson 5: Docker behind Traefik
 * Lesson 6: Ruby & Jekyll
-* Lesson 7: (tbd)
+* Lesson 7: Docker-compose
 
 ### Terraform
 
@@ -418,7 +418,7 @@ We can see that when we access the whoami container with traefik we get the X-Fo
 
 `CTRL + X` + `CTRL + E` - edit the current command in vi
 
-In vi standard mode: `:s/whoami/ghost/g` + `ENTER` - replace `whoami` in the whole (`g`) vim file with `ghost`
+In vi standard mode: `:%s/whoami/ghost/g` + `ENTER` - replace `whoami` in the whole (`g`) vim file with `ghost`
 
 `df -h` - check Filesystem
 
@@ -795,15 +795,280 @@ We made it like this so we can choose which app will be deployed or we can deplo
 for d in /var/data/deseop/current/*/ ; do (cd "$d" && docker-compose up -d); done
 
 ````
+
 ### Linux advance
 
 Troubleshooting docker:
 
 `docker inspect <container_name> | grep -5 labels` - to search for the word "labels"and 5 rows above and below the word
+
 `docker logs <container_name>` - to check logs
+
 `docker network ls` - lists all docker networks
 
+## Lesson 8: Terraform
 
+### Prerequisites
+
+- ssh key (`cvit_automation_id_rsa`)
+- domain - cvit.pw registration with namecheap.com (linked to digitalocean nameserver)
+- domain - cvit.pw hosted by digitalocean.com incl. API key
+- hetzner account and API key
+
+### Overview
+
+- cx11 Server with Terraform (`dream`)
+
+````
+
+created main.tf
+export HCLOUD_TOKEN="API_KEY"
+terraform plan
+terraform apply
+export DIGITALOCEAN_TOKEN="API_KEY"
+
+````
+
+We want the server to be reachable @ `dream.cvit.pw`
+
+### Quick introduction to Terraform
+
+[Terraform](https://www.terraform.io/) is a tool to build an infrastructure as Code. We will use it to create a server with docker and to deploy our wanted docker containers like we did in Lesson 4 and 5.
+Terraform can be used with other cloud providers such as AWS, Google Cloud, MS Azure, but we will use it with Hetzner.
+
+For the introduction we will use Terraform providers, resources, data and provisioners.
+
+Here we can find more about each:
+
+- [Providers](https://www.terraform.io/docs/configuration/providers.html)
+
+- [Resources](https://www.terraform.io/docs/configuration/resources.html)
+
+- [Data Source](https://www.terraform.io/docs/configuration/data-sources.html)
+
+- [Provisioners](https://www.terraform.io/docs/provisioners/index.html)
+
+### Creating a Terraform project
+
+We need to create a directory with a `main.tf` file and we can start with the project.
+
+In the main.tf we can type all our code to define what server we want, where we want it, add it a DNS entry and so on.
+
+Frst we created a resource for the SSH Key which we will use to connect to the server:
+
+````
+
+resource "hcloud_ssh_key" "cvit_automation" {
+  name = "cvit_automation"
+  public_key = file("~/.ssh/cvit_automation_id_rsa.pub")
+}
+
+````
+
+Then we added a resource to define the server (name, os, type of server and to add the ssh key)
+
+````
+
+resource "hcloud_server" "dream" {
+  name = "dream"
+  image = "ubuntu-18.04"
+  server_type = "cx11"
+  ssh_keys = [hcloud_ssh_key.cvit_automation.id]
+
+````
+
+After that we added a data object to get the DNS name from Digital ocean and assigned the name to the server.
+
+````
+
+data "digitalocean_domain" "cvit_pw" {
+  name = "cvit.pw"
+}
+
+# Add an A record to the domain for dream.cvit.pw.
+resource "digitalocean_record" "dream_cvit_pw" {
+  domain = data.digitalocean_domain.cvit_pw.name
+  type   = "A"
+  name   = "dream"
+  value  = hcloud_server.dream.ipv4_address
+}
+
+````
+
+We will use our API Keys as ENV variables, now we can add them with `export HCLOUD_TOKEN=insertAPIkeyhere` and export `DIGITALOCEAN_TOKEN=insertAPIkeyhere`
+
+Now we can run `terraform init` in the project directory and terraform will download the required provider plugins and initialize.
+
+After that we can do `terraform plan` so we can see what terraform needs to do, to create the infrastructure written in the `main.tf`. If everything looks good we can execute `terraform apply` which will check everything again and ask you if you want to form the infrastructure.
+
+If you clicked yes, then you deployed your first server via Terraform.
+
+### Deploying docker and containers with terraform
+
+Congratz, you deployed a server via terraform, but it would be lame if we need to install docker and a set of containers manually for every server.
+
+Thats why we will add one more step for this lesson. We will do the same we did in Lesson 5 and we will deploy whoami behind Traefik (loadbalancer/reverseproxy).
+
+To do this, we need to add a connection to the deployed server:
+
+````
+
+# Create a new server running debian
+resource "hcloud_server" "dream" {
+  name = "dream"
+  image = "ubuntu-18.04"
+  server_type = "cx11"
+  ssh_keys = [hcloud_ssh_key.cvit_automation.id]
+
+  # Connect to the server via SSH
+  connection {
+    type = "ssh"
+    host = self.ipv4_address
+    user = "root"
+    private_key = file("~/.ssh/cvit_automation_id_rsa")
+  }
+
+  # Installing Docker on the server
+  # Execute the command on the server
+  provisioner "remote-exec" {
+  inline = [
+    "wget -nv -O - https://get.docker.com/ | sh",
+    ]
+  }
+}
+
+````
+
+And we wanted to add a CNAME/`*`(Wildcard) domain:
+
+````
+
+# Add an C record to the domain for dream.cvit.pw.
+resource "digitalocean_record" "wildcard_dream_cvit_pw" {
+  domain = data.digitalocean_domain.cvit_pw.name
+  type   = "CNAME"
+  name   = "*.dream"
+  value  = "${digitalocean_record.dream_cvit_pw.fqdn}."
+}
+
+````
+
+We also need to add a new provider - docker, and specify on which server docker is installed: 
+
+````
+
+# Add docker provider
+terraform {
+  required_providers {
+    docker = "= 2.6.0"
+  }
+}
+
+provider "docker" {
+  host = "ssh://root@${hcloud_server.dream.ipv4_address}:22"
+}
+
+````
+
+This is the step where we will "translate" our docker and docker-compose knowledge to terraform:
+
+````
+
+# Create a docker network
+resource "docker_network" "web" {
+  name = "web"
+}
+
+# Create the Traefik container with env variables and labels
+resource "docker_container" "traefik" {
+  name  = "traefik"
+  image = "traefik:v2.2.1"
+  restart = "unless-stopped"
+
+  env = [
+    "TRAEFIK_ACCESSLOG=true",
+    "TRAEFIK_PROVIDERS_DOCKER=true",
+    "TRAEFIK_API_DASHBOARD=true",
+    "TRAEFIK_ENTRYPOINTS_WEB_ADDRESS=:80",
+    "TRAEFIK_ENTRYPOINTS_WEBSECURE_ADDRESS=:443",
+    "TRAEFIK_ENTRYPOINTS_WEB_HTTP_REDIRECTIONS_ENTRYPOINT_TO=websecure",
+    "TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_EMAIL=${var.traefik_le_email}",
+    "TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE_ENTRYPOINT=web",
+    "TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_STORAGE=/acme/acme.json"
+    ]
+
+  # Traefikception: Traefik routes to Traefik API
+  # These labels expose the internal Traefik Dashboard (and API)
+  labels = {
+    "traefik.http.routers.api.rule"                 = "Host(`t.${digitalocean_record.dream_cvit_pw.fqdn}`)"
+    "traefik.http.routers.api.service"              = "api@internal"
+    "traefik.http.routers.api.middlewares"          = "auth"
+    # Create hashed username and password combo
+    # echo $(htpasswd -nffddb user password)
+    "traefik.http.middlewares.auth.basicauth.users" = var.traefik_api_users
+    "traefik.http.routers.api.tls"                  = "true"
+    "traefik.http.routers.api.tls.certresolver"     = "le"
+  }
+
+  ports {
+    internal = "80"
+    external = "80"
+  }
+
+  ports {
+    internal = "443"
+    external = "443"
+  }
+
+  volumes {
+    host_path = "/var/run/docker.sock"
+    container_path = "/var/run/docker.sock"
+    read_only = true
+  }
+
+  # IMPORTANT: when traefik is redeployed you don't want to loose your ACME info
+  #
+  volumes {
+    host_path = "/var/data/traefik/acme/"
+    container_path = "/acme/"
+  }
+
+
+  # Add the traefik container to the network we created
+  networks_advanced {
+    name = docker_network.web.name
+  }
+
+}
+
+# Install whoami docker container behind Traefik
+resource "docker_container" "whoami" {
+  image = "containous/whoami"
+  name  = "whoami"
+
+  labels = {
+    "traefik.enable"                                = "true"
+    "traefik.http.routers.whoami.rule"              = "Host(`whoami.${digitalocean_record.dream_cvit_pw.fqdn}`)"
+    "traefik.http.routers.whoami.tls"               = "true"
+    "traefik.http.routers.whoami.tls.certresolver"  = "le"
+  }
+
+  # Add the whoami container to the network we created
+  networks_advanced {
+    name = docker_network.web.name
+  }
+}
+
+````
+
+Note: We used the email and username&pw variable because we wanted to upload this, you dont need to use it, you can just add them into the file.
+
+Note2: When we run terraform apply again, it wont create another new server if will just check the `main.tf` file and it will do the differences between the infrastructure in the `main.tf` file and the real infrastructure which is deployed.
+
+Now we need to run `terraform init` again because we added the docker provider, so terraform needs to download the plugins. When that is done, we can `plan` to check if everything looks good or if we have any errors.
+If everything looks good, run `terraform apply`, doublecheck :) and enter `yes`.
+
+Now the magic happens and you can sit back and watch how your infrastructure is building itself.
 
 ## Resources
 
