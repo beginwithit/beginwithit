@@ -810,7 +810,6 @@ Troubleshooting docker:
 `docker network ls` - lists all docker networks
 
 ## Lesson 8: Terraform
-<<<<<<< HEAD
 
 ### Prerequisites
 
@@ -1073,10 +1072,9 @@ Now we need to run `terraform init` again because we added the docker provider, 
 If everything looks good, run `terraform apply`, doublecheck :) and enter `yes`.
 
 Now the magic happens and you can sit back and watch how your infrastructure is building itself.
-=======
 
 ## Lesson 9: Terraform Modules
->>>>>>> 465c09300b1b2abafdb3bd54a8b623e0434fb60a
+
 
 ## Resources
 
