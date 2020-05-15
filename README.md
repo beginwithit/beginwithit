@@ -8,7 +8,9 @@ It starts with a common foundation - **Linux**. And goes up to managing your own
 
 The complete program is completely open source (as the technologies used) and free as a beer.
 
-## Contents 
+## Contents
+
+### Foreword (Lesson 0)
 
 ### Linux & Git (Lesson 1-3)
 
@@ -29,10 +31,11 @@ The complete program is completely open source (as the technologies used) and fr
 * Lesson 8: Terraform
 * Lesson 9: Terraform Modules
 
-## Lesson 1: Linux basics
+### Lesson 0: Foreword
 
-Document everything, you are going to forget it.
-Thats why we are going to use this method to learn new things.
+Document everything, you are going to forget it. Thats why we are going to use this method to learn and remember new things.
+
+## Lesson 1: Linux basics
 
 ### Overview
 
