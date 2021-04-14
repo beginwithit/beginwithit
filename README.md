@@ -35,6 +35,10 @@ The complete program is completely open source (as the technologies used) and fr
 
 Document everything, you are going to forget it. Thats why we are going to use this method to learn and remember new things.
 
+Prerequisites
+
+* GitHub Account
+
 ## Lesson 1: Linux basics
 
 ### Overview
