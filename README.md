@@ -139,7 +139,7 @@ vi ~/.ssh/authorized_keys
 
 # Paste the XXX.pub key in vim and save&close (:wq)
 
-chmod 644 ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
 
 chown -R perk:perk ~/.ssh
 ````
