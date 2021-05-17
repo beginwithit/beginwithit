@@ -2,9 +2,9 @@
 
 **Begin with information technology** initiated as a mentoring session between a senior IT allrounder and an IT enthusiast.
 
-This is for everybody who wants to (re-)start with infomation technology - it doesn't matter if you are coming from a Linux, Mac or Windows background.
+This is for everybody who wants to (re-)start with infomation technology - it doesn't matter if you are coming from a Linux, Mac, Windows or no background at all.
 
-It starts with a common foundation - **Linux**. And goes up to managing your own cloud server with **Docker** and Traefik as Loadbalancer. With an outlook to **Terraform**.
+It starts with a common foundation - **Linux & Git**. And goes up to managing your own cloud server with **Docker** and Traefik as Loadbalancer. With an outlook to **Terraform**.
 
 The complete program is completely open source (as the technologies used) and free as a beer.
 
@@ -38,6 +38,7 @@ Document everything, you are going to forget it. Thats why we are going to use t
 Prerequisites
 
 * GitHub Account
+* Some love for Linux :)
 
 ## Lesson 1: Linux basics
 
